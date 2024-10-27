@@ -1,41 +1,29 @@
 --!strict
-local UserEnumItem_Class = require(script.Parent.UserEnumItem)
+local Types = require(script.Parent.Types)
 
-export type UserEnum_Properties = { [string]: UserEnumItem_Class.UserEnumItem }
-export type UserEnum_Methods = { GetEnumItems: (self: UserEnum) -> { UserEnumItem_Class.UserEnumItem } }
-export type UserEnum = typeof(newproxy(true)) & UserEnum_Properties & UserEnum_Methods
+type UserEnum_Metatable = Types.UserEnum_Metatable
+type UserEnum = Types.UserEnum
 
 local UserEnum = {}
 
-function UserEnum.new(Enums, UserEnum_Properties: UserEnum_Properties)
-	local newUserEnum: UserEnum = newproxy(true)
-	local newUserEnum_Methods: UserEnum_Methods = {
-		GetEnumItems = function(): { UserEnumItem_Class.UserEnumItem }
-			local EnumItems = {}
-
-			for _, value: UserEnumItem_Class.UserEnumItem in pairs(UserEnum_Properties) do
-				table.insert(EnumItems, value)
-			end
-
-			return EnumItems
-		end,
-	}
-	local newUserEnum_Metatable = getmetatable(newUserEnum)
-	newUserEnum_Metatable.__index = function(_, index: string | UserEnumItem_Class.UserEnumItem)
-		local Property = UserEnum_Properties[index] or newUserEnum_Methods[index]
+function UserEnum.new(Enums_Metatable: Types.UserEnums_Metatable): (UserEnum, UserEnum_Metatable)
+	local newUserEnum = newproxy(true)
+	local newUserEnum_Metatable: any = getmetatable(newUserEnum)
+	newUserEnum_Metatable.__index = function(self: UserEnum, index: string)
+		local Property = rawget(newUserEnum_Metatable, index)
 
 		if Property then
 			return Property
 		else
-			error(index .. " is not a valid member of " .. '"' .. "Enum." .. tostring(newUserEnum) .. '"', 2)
+			error(index .. " is not a valid member of " .. '"' .. "Enum." .. tostring(self) .. '"', 2)
 		end
 	end
 	newUserEnum_Metatable.__tostring = function(self: UserEnum): string
 		local EnumName: string
 
-		for name: string, enum: UserEnum in Enums do
+		for name: string, enum: UserEnum in pairs(Enums_Metatable) do
 			if enum == self then
-				EnumName = name
+				EnumName = tostring(name)
 			end
 		end
 
@@ -43,7 +31,19 @@ function UserEnum.new(Enums, UserEnum_Properties: UserEnum_Properties)
 	end
 	newUserEnum_Metatable.__metatable = "The metatable is locked"
 
-	return newUserEnum
+	newUserEnum_Metatable.GetEnumItems = function(self: UserEnum): { Types.UserEnumItem }
+		local EnumItems = {}
+
+		for _, value: Types.UserEnumItem in pairs(newUserEnum_Metatable) do
+			if typeof(value) == "userdata" then
+				table.insert(EnumItems, value :: Types.UserEnumItem)
+			end
+		end
+
+		return EnumItems
+	end
+
+	return newUserEnum, newUserEnum_Metatable
 end
 
 return UserEnum

@@ -1,18 +1,16 @@
 --!strict
+local Types = require(script.Parent.Types)
+
+type UserEnumItem_Metatable = Types.UserEnumItem_Metatable
+type UserEnumItem = Types.UserEnumItem
+
 local UserEnumItem = {}
 
-export type UserEnumItem_Properties = {
-	Name: string,
-	Value: number,
-	EnumType: { [string]: UserEnumItem },
-}
-export type UserEnumItem = typeof(newproxy(true)) & UserEnumItem_Properties
-
-function UserEnumItem.new(newUserEnumItem_Properties: UserEnumItem_Properties)
-	local newUserEnumItem: UserEnumItem = newproxy(true)
-	local newUserEnumItem_Metatable = getmetatable(newUserEnumItem)
-	newUserEnumItem_Metatable.__index = function(_, index: string)
-		local Property = newUserEnumItem_Properties[index]
+function UserEnumItem.new(): (UserEnumItem, UserEnumItem_Metatable)
+	local newUserEnumItem = newproxy(true)
+	local newUserEnumItem_Metatable: any = getmetatable(newUserEnumItem)
+	newUserEnumItem_Metatable.__index = function(self: UserEnumItem, index: string)
+		local Property = rawget(newUserEnumItem_Metatable :: { [string]: any }, index)
 
 		if Property then
 			return Property
@@ -21,11 +19,11 @@ function UserEnumItem.new(newUserEnumItem_Properties: UserEnumItem_Properties)
 		end
 	end
 	newUserEnumItem_Metatable.__tostring = function(self): string
-		return "Enum." .. tostring(self.EnumType) .. "." .. self.Name
+		return "Enum." .. tostring(newUserEnumItem_Metatable.EnumType) .. "." .. tostring(newUserEnumItem_Metatable.Name)
 	end
 	newUserEnumItem_Metatable.__metatable = "The metatable is locked"
 
-	return newUserEnumItem
+	return newUserEnumItem, newUserEnumItem_Metatable
 end
 
 return UserEnumItem

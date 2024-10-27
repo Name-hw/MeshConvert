@@ -9,13 +9,16 @@ type UserEnumItem = UserEnumItem_Class.UserEnumItem
 local EnumList = {
 	--Please write the Enum you want to add here.
 
-	MeshFileFormat = {
-		OBJ = {} :: UserEnumItem,
-		--STL = {} :: UserEnumItem,
+	InputType = {
+		OBJ = {},
+		MeshPart = {},
 	},
-	MeshOutput = {
-		EditableMesh = {} :: UserEnumItem,
-		--Model = {} :: UserEnumItem,
+
+	OutputType = {
+		OBJ = {},
+		MeshPart = {},
+		PartsGroup = {},
+		UnionGroup = {},
 	},
 }
 

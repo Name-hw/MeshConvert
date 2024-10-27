@@ -1,21 +1,38 @@
 --!strict
 local Enums = require(script.Enums)
+local Types = require(script.Types)
 local MeshConvert = {}
 MeshConvert.Enums = Enums
 
-function MeshConvert.Import(Format: Enums.UserEnumItem, data: string, OutputType: Enums.UserEnumItem): EditableMesh?
-	local Formatter = require(script:FindFirstChild(Format.Name)) :: any
-	local splitedData: { string } = data:split("\n")
-	local ParsedData = Formatter.parse(splitedData)
-	local Output: EditableMesh? = Formatter.Import(ParsedData, OutputType)
+type FaceData = Types.FaceData
+type ParsedData = Types.ParsedData
+
+function MeshConvert.Convert(
+	InputType: Enums.UserEnumItem,
+	MeshData: any,
+	OutputType: Enums.UserEnumItem
+): string | MeshPart | Model
+	--assert(InputType.Name ~= OutputType.Name, "InputType and OutputType are the same.")
+
+	local parse = require(script:FindFirstChild(InputType.Name .. "Converter")).parse :: any
+	local convert = require(script:FindFirstChild(OutputType.Name .. "Converter")).convert :: any
+
+	if type(MeshData) == "string" then
+		MeshData = MeshData:split("\n")
+	end
+
+	local ParsedData: string
+	local succeeded: boolean = pcall(function()
+		ParsedData = parse(MeshData)
+	end)
+
+	if not succeeded then
+		error("Please check that InputType and MeshData are correct.")
+	end
+
+	local Output = convert(ParsedData)
 
 	return Output
-end
-
-function MeshConvert.Export(Format: Enums.UserEnumItem, Instance: Instance)
-	local Formatter = require(script:FindFirstChild(Format.Name)) :: any
-
-	Formatter.Export(Instance)
 end
 
 return MeshConvert
