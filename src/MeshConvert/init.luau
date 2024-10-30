@@ -22,13 +22,13 @@ function MeshConvert.Convert(
 	end
 
 	local ParsedData: string
-	local succeeded: boolean = pcall(function()
+	local succeeded: boolean, errorMsg: string? = pcall(function()
 		ParsedData = parse(MeshData)
+
+		return nil
 	end)
 
-	if not succeeded then
-		error("Please check that InputType and MeshData are correct.")
-	end
+	assert(succeeded, errorMsg :: string .. "\nPlease check that InputType and MeshData are correct.")
 
 	local Output = convert(ParsedData)
 
