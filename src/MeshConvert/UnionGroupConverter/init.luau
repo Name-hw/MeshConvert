@@ -63,7 +63,9 @@ function PartsGroupConverter.convert(ParsedData: ParsedData, options: Options?)
 			firstPart:UnionAsync(PartGroup).Parent = UnionGroup
 
 			if #(Parts :: { Part }) > PartAmountInUnion then
-				table.move(Parts, PartAmountInUnion + 1, #Parts - PartAmountInUnion, 1, Parts)
+				local t = {}
+				table.move(Parts, PartAmountInUnion + 1, #Parts, 1, t)
+				Parts = t
 			else
 				Parts = {}
 			end
@@ -71,17 +73,16 @@ function PartsGroupConverter.convert(ParsedData: ParsedData, options: Options?)
 			task.wait()
 		end
 
-		if index % 120 == 0 then
+		if index % PartAmountInUnion == 0 then
 			task.wait()
 		end
 	end
 
-	if #(Parts :: { BasePart }) % (PartAmountInUnion * #UnionGroup:GetChildren()) ~= 0 then
-		UnionGroupIndex += 1
+	if #(Parts :: { BasePart }) ~= 0 then
 		local firstPart: BasePart = (Parts :: { BasePart })[1]
 		local PartGroup = {}
 
-		table.move(Parts :: { BasePart }, 2, #Parts, 1, PartGroup)
+		table.move(Parts, 2, #Parts, 1, PartGroup)
 
 		firstPart:UnionAsync(PartGroup).Parent = UnionGroup
 
