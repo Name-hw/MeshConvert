@@ -54,7 +54,7 @@ function MeshPartConverter.parse(MeshPart: MeshPart)
 		sizeRatio = MeshPart.Size / MeshPart.MeshSize
 	elseif MeshPart.MeshId ~= "" then
 		local succeeded: boolean, errorMsg: string? = pcall(function()
-			EM = AssetService:CreateEditableMeshFromPartAsync(MeshPart)
+			EM = AssetService:CreateEditableMeshAsync(MeshPart.MeshContent)
 
 			return nil
 		end)
