@@ -6,11 +6,13 @@ MeshConvert.Enums = Enums
 
 type FaceData = Types.FaceData
 type ParsedData = Types.ParsedData
+export type Options = Types.Options
 
 function MeshConvert.Convert(
 	InputType: Enums.UserEnumItem,
 	MeshData: any,
-	OutputType: Enums.UserEnumItem
+	OutputType: Enums.UserEnumItem,
+	options: Options
 ): string | MeshPart | Model
 	--assert(InputType.Name ~= OutputType.Name, "InputType and OutputType are the same.")
 
@@ -28,9 +30,13 @@ function MeshConvert.Convert(
 		return nil
 	end)
 
-	assert(succeeded, errorMsg :: string .. "\nPlease check that InputType and MeshData are correct.")
+	if errorMsg then
+		assert(succeeded, errorMsg :: string .. "\nPlease check that InputType or MeshData are correct.")
+	else
+		assert(succeeded, "Please check that InputType or MeshData are correct.")
+	end
 
-	local Output = convert(ParsedData)
+	local Output = convert(ParsedData, options)
 
 	return Output
 end

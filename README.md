@@ -12,13 +12,15 @@ Library for converting meshes in various ways
 
 You can get the converted mesh with the MeshConvert.Convert function.
 
-> MeshConvert.Convert(InputType, MeshData, OutputType)
+> MeshConvert.Convert(InputType, MeshData, OutputType, options)
 
 1. InputType: One of MeshConvert.Enums.InputType
 
 2. MeshData: The mesh you want to convert (depending on InputType)
 
 3. OutputType: One of MeshConvert.Enums.OutputType
+
+4. options: Options for the conversion (Type is MeshConvert.Options, can be nil.)
 
 > If InputType or OutputType is MeshPart, Please turn on EditableImage and EditableMesh in the beta features.
 

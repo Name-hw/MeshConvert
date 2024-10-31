@@ -5,5 +5,8 @@ export type ParsedData = {
 	vt: { Vector2 },
 	f: { FaceData },
 }
+export type Options = {
+	PartAmountInUnion: number?,
+}
 
 return nil

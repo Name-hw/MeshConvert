@@ -7,8 +7,9 @@ local drawFace = require(Root.drawFace)
 
 type FaceData = Types.FaceData
 type ParsedData = Types.ParsedData
+type Options = Types.Options
 
-function PartsGroupConverter.convert(ParsedData: ParsedData)
+function PartsGroupConverter.convert(ParsedData: ParsedData, options: Options?)
 	local UnionGroup = Instance.new("Model")
 	UnionGroup.Name = "UnionGroup"
 
@@ -17,6 +18,12 @@ function PartsGroupConverter.convert(ParsedData: ParsedData)
 	local Parts: { BasePart? } = {}
 	local PartAmountInUnion = 120
 	local UnionGroupIndex = 0
+
+	if options then
+		if options.PartAmountInUnion then
+			PartAmountInUnion = options.PartAmountInUnion
+		end
+	end
 
 	for index: number, FaceData: FaceData in ParsedData.f :: { FaceData } do
 		if #FaceData.vIndices == 3 then
