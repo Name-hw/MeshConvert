@@ -1,12 +1,6 @@
+--[[drawFace v2]]
 --!native
 --!strict
-local Part = Instance.new("Part")
-Part.Anchored = true
-Part.CanCollide = false
-Part.CanTouch = false
-Part.CanQuery = false
-Part.TopSurface = Enum.SurfaceType.Smooth
-Part.BottomSurface = Enum.SurfaceType.Smooth
 local tolerance = 0.001
 
 local function projectToPlane(point: Vector3, origin: Vector3, normal: Vector3): Vector2
@@ -58,13 +52,22 @@ local function drawFace(vertices: { Vector3 }, parent: Instance?, partsToUpdate:
 					partsToUpdate[2]:Destroy()
 				end
 			else
-				wedge = Part:Clone()
+				wedge = Instance.new("Part")
+				task.synchronize()
+				wedge.Anchored = true
+				wedge.CanCollide = false
+				wedge.CanTouch = false
+				wedge.CanQuery = false
+				wedge.TopSurface = Enum.SurfaceType.Smooth
+				wedge.BottomSurface = Enum.SurfaceType.Smooth
 			end
 
 			wedge.Shape = Enum.PartType.Wedge
 			wedge.Size = Vector3.new(0, ac.Magnitude, ab.Magnitude)
 			wedge.CFrame = CFrame.fromMatrix((b + c) / 2, right, up, back)
 			wedge.Parent = parent
+
+			task.desynchronize()
 
 			table.insert(parts, wedge)
 		else
@@ -79,13 +82,27 @@ local function drawFace(vertices: { Vector3 }, parent: Instance?, partsToUpdate:
 			if partsToUpdate and partsToUpdate[1] then
 				w1 = partsToUpdate[1]
 			else
-				w1 = Part:Clone()
+				w1 = Instance.new("Part")
+				task.synchronize()
+				w1.Anchored = true
+				w1.CanCollide = false
+				w1.CanTouch = false
+				w1.CanQuery = false
+				w1.TopSurface = Enum.SurfaceType.Smooth
+				w1.BottomSurface = Enum.SurfaceType.Smooth
 			end
 
 			if partsToUpdate and partsToUpdate[2] then
 				w2 = partsToUpdate[2]
 			else
-				w2 = Part:Clone()
+				w2 = Instance.new("Part")
+				task.synchronize()
+				w2.Anchored = true
+				w2.CanCollide = false
+				w2.CanTouch = false
+				w2.CanQuery = false
+				w2.TopSurface = Enum.SurfaceType.Smooth
+				w2.BottomSurface = Enum.SurfaceType.Smooth
 			end
 
 			w1.Shape = Enum.PartType.Wedge
@@ -97,6 +114,8 @@ local function drawFace(vertices: { Vector3 }, parent: Instance?, partsToUpdate:
 			w2.Size = Vector3.new(0, height, math.abs(ac:Dot(back)))
 			w2.CFrame = CFrame.fromMatrix((a + c) / 2, -right, up, -back)
 			w2.Parent = parent
+
+			task.desynchronize()
 
 			table.insert(parts, w1)
 			table.insert(parts, w2)
@@ -128,13 +147,22 @@ local function drawFace(vertices: { Vector3 }, parent: Instance?, partsToUpdate:
 					end
 				end
 			else
-				block = Part:Clone()
+				block = Instance.new("Part")
+				task.synchronize()
+				block.Anchored = true
+				block.CanCollide = false
+				block.CanTouch = false
+				block.CanQuery = false
+				block.TopSurface = Enum.SurfaceType.Smooth
+				block.BottomSurface = Enum.SurfaceType.Smooth
 			end
 
 			block.Shape = Enum.PartType.Block
 			block.Size = Vector3.new(ab.Magnitude, cb.Magnitude, 0)
 			block.CFrame = CFrame.lookAlong(centroid, normal, ab)
 			block.Parent = parent
+
+			task.desynchronize()
 
 			table.insert(parts, block)
 		else
