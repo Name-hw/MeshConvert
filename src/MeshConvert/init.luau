@@ -36,6 +36,8 @@ function MeshConvert.Convert(
 		assert(succeeded, "Please check that InputType or MeshData are correct.")
 	end
 
+	task.wait()
+
 	local Output = convert(ParsedData, options)
 
 	return Output
