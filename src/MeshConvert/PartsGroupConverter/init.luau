@@ -9,25 +9,33 @@ type ParsedData = Types.ParsedData
 
 function PartsGroupConverter.convert(ParsedData: ParsedData)
 	local newActorFolder = Instance.new("Folder", script)
+	newActorFolder.Name = "_ActorFolder"
 	local PartsGroup = Instance.new("Model", newActorFolder)
 	PartsGroup.Name = "MeshConvert_PartsGroup"
 
+	local isSucceeded = false
 	local threadCount = math.ceil(#ParsedData.f / 120)
-	local Scheduler = Parallelizer.CreateJobScheduler(
-		script.ActorFolder.Actor.parallelWorker,
-		math.ceil(threadCount / 2),
-		newActorFolder
-	)
+	local actorCount = math.ceil(threadCount / 2)
+	local Scheduler = Parallelizer.CreateJobScheduler(script.ActorFolder.Actor.parallelWorker, actorCount, newActorFolder)
 
 	task.wait()
 
-	local PartsGroupConvertInstruction = Parallelizer.CreateInstructionData(ParsedData)
-
-	task.wait()
+	local PartsGroupConvertInstruction = Parallelizer.CreateInstructionData({ actorCount, ParsedData })
 
 	Scheduler:DispatchEquallyAsync("PartsGroupConvert", threadCount, function(result)
 		Scheduler:Destroy()
+
+		isSucceeded = true
 	end, PartsGroupConvertInstruction)
+
+	while task.wait() do
+		if isSucceeded then
+			PartsGroup.Parent = script
+
+			newActorFolder:Destroy()
+			break
+		end
+	end
 
 	return PartsGroup
 end

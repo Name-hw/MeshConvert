@@ -14,7 +14,9 @@ local PartsGroup = script.Parent.Parent:FindFirstChild("MeshConvert_PartsGroup")
 type FaceData = Types.FaceData
 type ParsedData = Types.ParsedData
 
-Parallelizer.CreateThread(Actor, "PartsGroupConvert", function(id: number, ParsedData: SharedTable)
+Parallelizer.CreateThread(Actor, "PartsGroupConvert", function(id: number, instruction: SharedTable)
+	local actorCount = instruction[1]
+	local ParsedData = instruction[2]
 	local i = math.min(id * 120, SharedTable.size(ParsedData.f))
 
 	for index = 1 + (id - 1) * 120, i, 1 do
@@ -37,7 +39,7 @@ Parallelizer.CreateThread(Actor, "PartsGroupConvert", function(id: number, Parse
 			end
 		end)
 
-		if index % 12 == 0 then
+		if (index * actorCount) % 120 == 0 then
 			task.wait()
 		end
 	end

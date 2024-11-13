@@ -8,12 +8,7 @@ type FaceData = Types.FaceData
 type ParsedData = Types.ParsedData
 export type Options = Types.Options
 
-function MeshConvert.Convert(
-	InputType: Enums.UserEnumItem,
-	MeshData: any,
-	OutputType: Enums.UserEnumItem,
-	options: Options
-): string | MeshPart | Model
+function MeshConvert.Convert(InputType: Enums.UserEnumItem, MeshData: any, OutputType: Enums.UserEnumItem, options: Options?): string | MeshPart | Model
 	--assert(InputType.Name ~= OutputType.Name, "InputType and OutputType are the same.")
 
 	local parse = require(script:FindFirstChild(InputType.Name .. "Converter")).parse :: any

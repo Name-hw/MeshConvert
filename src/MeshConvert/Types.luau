@@ -6,7 +6,7 @@ export type ParsedData = {
 	f: { FaceData },
 }
 export type Options = {
-	PartAmountInUnion: number?,
+	partAmountInUnion: number?,
 }
 
 return nil

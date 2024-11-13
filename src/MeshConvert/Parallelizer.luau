@@ -20,21 +20,8 @@ type InstructionData = {
 type JobScheduler = {
 	Actors: { Actor },
 	PacketBindable: BindableEvent,
-	DispatchEquallyAsync: (
-		self: JobScheduler,
-		threadName: string,
-		threadCount: number,
-		callback: (result) -> nil,
-		instructionData: InstructionData?
-	) -> nil,
-	DispatchAsync: (
-		self: JobScheduler,
-		threadName: string,
-		threadCount: number,
-		batchSize: number,
-		callback: (result) -> nil,
-		instructionData: InstructionData?
-	) -> nil,
+	DispatchEquallyAsync: (self: JobScheduler, threadName: string, threadCount: number, callback: (result) -> nil, instructionData: InstructionData?) -> nil,
+	DispatchAsync: (self: JobScheduler, threadName: string, threadCount: number, batchSize: number, callback: (result) -> nil, instructionData: InstructionData?) -> nil,
 	Destroy: (self: JobScheduler) -> nil,
 }
 
@@ -42,38 +29,21 @@ function Parallelizer.CreateInstructionData(data: InstructionTableData): Instruc
 	return setmetatable({ Data = SharedTable.new(data or {}) }, { __index = InstructionData })
 end
 
-function Parallelizer.CreateThread(
-	actor: Actor,
-	threadName: string,
-	callback: (threadId: number, instructionTable: SharedTable) -> any
-)
-	actor:BindToMessageParallel(
-		threadName,
-		function(
-			threadCount: number,
-			dispatchId: number,
-			batchSize: number,
-			packetBindable: BindableEvent,
-			instructionTable: SharedTable?
-		)
-			for i = dispatchId, math.min(dispatchId + (batchSize - 1), threadCount) do
-				local response = { callback(i, instructionTable) }
+function Parallelizer.CreateThread(actor: Actor, threadName: string, callback: (threadId: number, instructionTable: SharedTable) -> any)
+	actor:BindToMessageParallel(threadName, function(threadCount: number, dispatchId: number, batchSize: number, packetBindable: BindableEvent, instructionTable: SharedTable?)
+		for i = dispatchId, math.min(dispatchId + (batchSize - 1), threadCount) do
+			local response = { callback(i, instructionTable) }
 
-				if #response > 0 then
-					packetBindable:Fire(i, response)
-				else
-					warn(`[Parallelizer] Thread "{threadName}" with dispatch id of {i} is missing a return value`)
-				end
+			if #response > 0 then
+				packetBindable:Fire(i, response)
+			else
+				warn(`[Parallelizer] Thread "{threadName}" with dispatch id of {i} is missing a return value`)
 			end
 		end
-	)
+	end)
 end
 
-function Parallelizer.CreateJobScheduler(
-	jobScript: Script | LocalScript,
-	actorCount: number,
-	actorStorage: Instance
-): JobScheduler
+function Parallelizer.CreateJobScheduler(jobScript: Script | LocalScript, actorCount: number, actorStorage: Instance): JobScheduler
 	local actors = table.create(actorCount)
 
 	for i = 1, actorCount do
@@ -84,6 +54,10 @@ function Parallelizer.CreateJobScheduler(
 		jobScriptClone.Enabled = true
 
 		actors[i] = actor
+
+		if i % 4 == 0 then
+			task.wait()
+		end
 	end
 
 	return setmetatable({
@@ -102,22 +76,11 @@ function InstructionData:GetData(): InstructionData
 end
 
 -- Job Scheduler
-function JobScheduler:DispatchEquallyAsync(
-	threadName: string,
-	threadCount: number,
-	callback: (result) -> nil,
-	instData: InstructionData?
-)
+function JobScheduler:DispatchEquallyAsync(threadName: string, threadCount: number, callback: (result) -> nil, instData: InstructionData?)
 	self:DispatchAsync(threadName, threadCount, threadCount // #self.Actors, callback, instData)
 end
 
-function JobScheduler:DispatchAsync(
-	threadName: string,
-	threadCount: number,
-	batchSize: number,
-	callback: (result) -> nil,
-	instData: InstructionData?
-)
+function JobScheduler:DispatchAsync(threadName: string, threadCount: number, batchSize: number, callback: (result) -> nil, instData: InstructionData?)
 	batchSize = math.max(batchSize, 1)
 
 	local data = if instData then instData.Data else nil

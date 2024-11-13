@@ -38,3 +38,7 @@ Output.Parent = workspace
 
 1. [Library link](https://create.roblox.com/store/asset/132609822030597/MeshConvert)
 2. [DevForum](https://devforum.roblox.com/t/meshconvert-library-for-converting-meshes-in-various-ways/3230079)
+
+## **Credits**
+
+- [Parallelizer (edited)](https://devforum.roblox.com/t/parallelizer-a-lightweight-packet-based-parallelism-solution/3167135)
