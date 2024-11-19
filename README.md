@@ -28,8 +28,9 @@ You can get the converted mesh with the MeshConvert.Convert function.
 
 ```luau
 local MeshConvert = require(script.MeshConvert)
+local options: MeshConvert.Options = {partAmountInUnion = 40}
 
-local Output = MeshConvert.Convert(MeshConvert.Enums.InputType.MeshPart, workspace.Meshes/something, MeshConvert.Enums.OutputType.UnionGroup)
+local Output = MeshConvert.Convert(MeshConvert.Enums.InputType.MeshPart, workspace["Meshes/something"], MeshConvert.Enums.OutputType.UnionGroup, options)
 
 Output.Parent = workspace
 ```
