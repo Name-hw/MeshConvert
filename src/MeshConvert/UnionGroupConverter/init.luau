@@ -32,11 +32,11 @@ function PartsGroupConverter.convert(ParsedData: ParsedData, options: Options?)
 
 	local threadCount = math.ceil(#ParsedData.f / 120)
 	local actorCount = math.ceil(threadCount / 2)
-	local Scheduler = Parallelizer.CreateJobScheduler(script.Folder.ActorFolder.Actor.parallelWorker, actorCount, ActorFolder)
+	local Scheduler: Parallelizer.JobScheduler = Parallelizer.CreateJobScheduler(script.Folder.ActorFolder.Actor.parallelWorker, actorCount, ActorFolder)
 
 	task.wait()
 
-	local UnionGroupConvertInstruction = Parallelizer.CreateInstructionData({ actorCount, ParsedData :: any, partAmountInUnion })
+	local UnionGroupConvertInstruction: Parallelizer.InstructionData = Parallelizer.CreateInstructionData({ actorCount, ParsedData, partAmountInUnion } :: Parallelizer.InstructionTableData)
 
 	Scheduler:DispatchEquallyAsync("UnionGroupConvert", threadCount, function(result)
 		Scheduler:Destroy()

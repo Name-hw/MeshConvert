@@ -5,6 +5,7 @@ if not Actor then
 	return
 end
 
+local GeometryService = game:GetService("GeometryService")
 local Root = script.Parent.Parent.Parent.Parent.Parent
 local Parallelizer = require(Root.Parallelizer)
 local Types = require(Root.Types)
@@ -73,7 +74,11 @@ Parallelizer.CreateThread(Actor, "UnionGroupConvert", function(id: number, instr
 
 		task.synchronize()
 
-		firstPart:UnionAsync(UnionParts).Parent = UnionGroup
+		local Unions = GeometryService:UnionAsync(firstPart, UnionParts, { SplitApart = false })
+
+		for _, Union in ipairs(Unions) do
+			Union.Parent = UnionGroup
+		end
 	end
 
 	return false

@@ -20,7 +20,7 @@ function PartsGroupConverter.convert(ParsedData: ParsedData)
 
 	task.wait()
 
-	local PartsGroupConvertInstruction = Parallelizer.CreateInstructionData({ actorCount, ParsedData })
+	local PartsGroupConvertInstruction = Parallelizer.CreateInstructionData({ actorCount, ParsedData } :: Parallelizer.InstructionTableData)
 
 	Scheduler:DispatchEquallyAsync("PartsGroupConvert", threadCount, function(result)
 		Scheduler:Destroy()

@@ -17,7 +17,7 @@ local function addSharpQuad(EM: EditableMesh, vid0: number, vid1: number, vid2: 
 	local fid2 = EM:AddTriangle(vid0, vid2, vid3)
 	EM:SetFaceNormals(fid2, { nid, nid, nid })
 end
-
+--[[
 local function computeExtents(em: EditableMesh): Vector3
 	local verts = em:GetVertices()
 	if #verts == 0 then
@@ -37,7 +37,7 @@ local function computeExtents(em: EditableMesh): Vector3
 	end
 	return max - min
 end
-
+]]
 function MeshPartConverter.parse(MeshPart: MeshPart)
 	local ParsedData = {
 		v = {},
@@ -192,11 +192,7 @@ function MeshPartConverter.convert(ParsedData: ParsedData)
 
 	for index, FaceData: FaceData in ipairs(ParsedData.f) do
 		if #FaceData.vIndices == 3 then
-			local fIndex = EM:AddTriangle(
-				EMvIndices[FaceData.vIndices[1]],
-				EMvIndices[FaceData.vIndices[2]],
-				EMvIndices[FaceData.vIndices[3]]
-			)
+			local fIndex = EM:AddTriangle(EMvIndices[FaceData.vIndices[1]], EMvIndices[FaceData.vIndices[2]], EMvIndices[FaceData.vIndices[3]])
 
 			if #FaceData.vnIndices ~= 0 then
 				EM:SetFaceNormals(fIndex, {
@@ -214,16 +210,8 @@ function MeshPartConverter.convert(ParsedData: ParsedData)
 				})
 			end
 		elseif #FaceData.vIndices == 4 then
-			local fIndex = EM:AddTriangle(
-				EMvIndices[FaceData.vIndices[1]],
-				EMvIndices[FaceData.vIndices[2]],
-				EMvIndices[FaceData.vIndices[3]]
-			)
-			local fIndex2 = EM:AddTriangle(
-				EMvIndices[FaceData.vIndices[3]],
-				EMvIndices[FaceData.vIndices[4]],
-				EMvIndices[FaceData.vIndices[1]]
-			)
+			local fIndex = EM:AddTriangle(EMvIndices[FaceData.vIndices[1]], EMvIndices[FaceData.vIndices[2]], EMvIndices[FaceData.vIndices[3]])
+			local fIndex2 = EM:AddTriangle(EMvIndices[FaceData.vIndices[3]], EMvIndices[FaceData.vIndices[4]], EMvIndices[FaceData.vIndices[1]])
 
 			if #FaceData.vnIndices ~= 0 then
 				EM:SetFaceNormals(fIndex, {
@@ -262,7 +250,13 @@ function MeshPartConverter.convert(ParsedData: ParsedData)
 
 	task.wait()
 
-	local MeshPart: MeshPart = EM:CreateMeshPartAsync(computeExtents(EM))
+	local MeshPart: MeshPart = AssetService:CreateMeshPartAsync(Content.fromObject(EM))
+	--[[
+	local MeshPart: MeshPart = Instance.new("MeshPart", script)
+	MeshPart.Size = MeshPartFromEM.MeshSize
+
+	MeshPart:ApplyMesh(MeshPartFromEM)
+	]]
 
 	return MeshPart
 end
