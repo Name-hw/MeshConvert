@@ -22,7 +22,7 @@ You can get the converted mesh with the MeshConvert.Convert function.
 
 4. options: Options for the conversion (Type is MeshConvert.Options, can be nil.)
 
-> If InputType or OutputType is MeshPart, Please turn on EditableImage and EditableMesh in the beta features.
+> If InputType or OutputType is MeshPart, go to the Security tab in your game settings and enable Allow Mesh/Image API.
 
 ## **Example**
 
